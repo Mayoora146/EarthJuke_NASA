@@ -1,0 +1,106 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Earth Juke - Jukebox</title>
+
+    <!-- Dashboard design -->
+    <link rel="stylesheet" href="dashboard.css">
+
+    <!-- Dashboard functionality -->
+    <script src="dashboard.js" defer></script>
+</head>
+
+<body class="dashboard-page">
+
+    <!-- Main Dashboard Section -->
+    <main class="dashboard-container">
+
+        <!-- Heading -->
+        <header class="dashboard-header">
+            <h1>THE JUKEBOX</h1>
+
+            <p>
+                Pick a signal. Every tone is a planetary change,
+                translated into sound.
+            </p>
+        </header>
+
+        <!-- Environmental Cards -->
+        <section class="dashboard-grid">
+
+            <!-- Card 1: Arctic Sea Ice -->
+            <article class="signal-card">
+                <span class="category">CRYOSPHERE</span>
+
+                <h2>Arctic Sea Ice</h2>
+
+                <p>
+                    Shrinking ice becomes a thinning, rising pitch.
+                </p>
+
+                <button class="play-btn" data-signal="ice">
+                    ▶ PLAY
+                </button>
+            </article>
+
+            <!-- Card 2:  Temperature -->
+            <article class="signal-card">
+                <span class="category">EARTH</span>
+
+                <h2>Temperature</h2>
+
+                <p>
+                    Warmer water lowers and widens the tone.
+                </p>
+
+                <button class="play-btn" data-signal="ocean">
+                    ▶ PLAY
+                </button>
+            </article>
+
+            <!-- Card 3: Forest Cover -->
+            <article class="signal-card">
+                <span class="category">BIOSPHERE</span>
+
+                <h2>Forest Cover</h2>
+
+                <p>
+                    Green density shapes a soft, layered chord.
+                </p>
+
+                <button class="play-btn" data-signal="forest">
+                    ▶ PLAY
+                </button>
+            </article>
+
+            <!-- Card 4: Carbon Dioxide -->
+            <article class="signal-card">
+                <span class="category">ATMOSPHERE</span>
+
+                <h2>Carbon Dioxide</h2>
+
+                <p>
+                    Rising CO₂ adds a slow, building drone.
+                </p>
+
+                <button class="play-btn" data-signal="carbon">
+                    ▶ PLAY
+                </button>
+            </article>
+
+        </section>
+
+        <!-- Back to Landing Page -->
+        <footer class="dashboard-footer">
+            <a href="index.html">← BACK TO HOME</a>
+        </footer>
+
+    </main>
+
+</body>
+</html>
