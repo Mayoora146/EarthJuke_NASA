@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Temperature | Earth Juke</title>
+
+  <style>
+    :root {
+      --bg: #03050d;
+      --cyan: #38e8ff;
+      --purple: #9b5cff;
+      --text: #e8f1ff;
+      --muted: #a0b2ce;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse at 80% 15%, #9b5cff19, transparent 50%),
+        radial-gradient(ellipse at 20% 90%, #2f7bff24, transparent 55%),
+        var(--bg);
+      color: var(--text);
+      font-family: Inter, system-ui, sans-serif;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(1px 1px at 15% 20%, white, transparent),
+        radial-gradient(1px 1px at 70% 45%, white, transparent),
+        radial-gradient(1px 1px at 40% 80%, white, transparent);
+      background-size: 350px 350px;
+      opacity: .5;
+    }
+
+    main {
+      position: relative;
+      width: min(1080px, 92%);
+      margin: auto;
+      padding: 32px 0 60px;
+    }
+
+    a { color: var(--cyan); }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 35px;
+      text-decoration: none;
+      font-size: .8rem;
+      letter-spacing: .12em;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .eyebrow {
+      color: var(--cyan);
+      font-size: .72rem;
+      letter-spacing: .2em;
+    }
+
+    h1 {
+      margin: 12px 0;
+      font-size: clamp(2rem, 6vw, 3.8rem);
+      letter-spacing: .1em;
+      background: linear-gradient(100deg, white, var(--cyan), var(--purple));
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    header p, .description {
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .panel {
+      padding: 30px;
+      border: 1px solid #8cc8ff40;
+      border-radius: 24px;
+      background: #ffffff08;
+      box-shadow: 0 15px 60px #0005;
+      backdrop-filter: blur(16px);
+    }
+
+    .panel-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    h2 { margin: 8px 0; font-size: 1.3rem; }
+
+    .period { color: var(--muted); white-space: nowrap; }
+
+    .readings {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr 1fr;
+      gap: 16px;
+      margin: 28px 0 20px;
+    }
+
+    .readings span {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: .65rem;
+      letter-spacing: .12em;
+    }
+
+    .readings strong {
+      font-size: clamp(1.2rem, 3vw, 2rem);
+      font-weight: 500;
+    }
+
+    #anomaly { color: var(--cyan); }
+
+    .graph {
+      overflow-x: auto;
+      border-radius: 12px;
+      background: #03050d50;
+    }
+
+    svg {
+      display: block;
+      width: 100%;
+      min-width: 540px;
+      height: auto;
+    }
+
+    svg text {
+      fill: var(--muted);
+      font: 13px system-ui, sans-serif;
+    }
+
+    .legend, .progress-label {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      color: var(--muted);
+      font-size: .78rem;
+      margin: 14px 0;
+    }
+
+    .cyan { color: var(--cyan); }
+
+    progress {
+      display: block;
+      width: 100%;
+      height: 7px;
+      border: 0;
+      border-radius: 20px;
+      overflow: hidden;
+      accent-color: var(--cyan);
+    }
+
+    progress::-webkit-progress-bar { background: #202a40; }
+    progress::-webkit-progress-value { background: var(--cyan); }
+    progress::-moz-progress-bar { background: var(--cyan); }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 25px;
+    }
+
+    button, select {
+      border: 1px solid #617492;
+      border-radius: 25px;
+      padding: 12px 18px;
+      background: #131d32;
+      color: var(--text);
+      font: inherit;
+      font-size: .85rem;
+      cursor: pointer;
+    }
+
+    #play {
+      border-color: var(--cyan);
+      background: linear-gradient(135deg, #2f7bff80, #9b5cff70);
+      box-shadow: 0 0 18px #38e8ff25;
+    }
+
+    button:hover:not(:disabled) { border-color: var(--cyan); }
+
+    button:disabled { opacity: .4; cursor: default; }
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: .85rem;
+    }
+
+    input { width: 85px; accent-color: var(--cyan); }
+
+    :focus-visible {
+      outline: 2px solid var(--cyan);
+      outline-offset: 4px;
+    }
+
+    #status {
+      color: var(--muted);
+      min-height: 24px;
+      margin: 18px 0 0;
+      font-size: .85rem;
+      line-height: 1.6;
+    }
+
+    .notes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 35px;
+      padding: 30px 5px 0;
+    }
+
+    .notes h3 { font-size: 1rem; }
+
+    .notes p {
+      color: var(--muted);
+      font-size: .88rem;
+      line-height: 1.8;
+    }
+
+    @media (max-width: 600px) {
+      .panel { padding: 20px; }
+      .panel-title { align-items: flex-start; flex-direction: column; }
+      .readings { gap: 10px; }
+      .readings span { font-size: .55rem; }
+      .notes { grid-template-columns: 1fr; gap: 5px; }
+      .controls { gap: 10px; }
+    }
+  </style>
+
+  <script src="sonification.js" defer></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const get = id => document.getElementById(id);
+      const player = window.temperaturePlayer;
+
+      const playButton = get("play");
+      const pauseButton = get("pause");
+      const stopButton = get("stop");
+      const status = get("status");
+      const chart = get("chart");
+
+      let points = [];
+      let activeLine, dot, cursor;
+      let minimum, maximum;
+      let state = "loading";
+      let graphFrame;
+let displayedIndex = 0;
+let targetIndex = 0;
+let previousFrameTime = 0;
+
+function animateGraph(time) {
+  const elapsed = previousFrameTime
+    ? Math.min((time - previousFrameTime) / 1000, 0.1)
+    : 0;
+
+  previousFrameTime = time;
+
+  if (state === "playing" && displayedIndex < targetIndex) {
+    const playbackSpeed = Number(get("speed").value);
+
+    // Catch up to the currently sounding year over about 0.3 seconds.
+    displayedIndex = Math.min(
+      targetIndex,
+      displayedIndex + elapsed * playbackSpeed * 3.3
+    );
+  }
+
+  drawPlayback(displayedIndex);
+  graphFrame = requestAnimationFrame(animateGraph);
+}
+
+function drawPlayback(position) {
+  if (!points.length || !activeLine) return;
+
+  const index = Math.floor(position);
+  const nextIndex = Math.min(index + 1, points.length - 1);
+  const fraction = position - index;
+
+  const currentX = x(index) +
+    (x(nextIndex) - x(index)) * fraction;
+
+  const currentY = y(points[index].anomaly) +
+    (y(points[nextIndex].anomaly) - y(points[index].anomaly)) *
+    fraction;
+
+  const trail = points
+    .slice(0, index + 1)
+    .map((point, i) => `${x(i)},${y(point.anomaly)}`);
+
+  trail.push(`${currentX},${currentY}`);
+
+  activeLine.setAttribute("points", trail.join(" "));
+
+  dot.setAttribute("cx", currentX);
+  dot.setAttribute("cy", currentY);
+  cursor.setAttribute("x1", currentX);
+  cursor.setAttribute("x2", currentX);
+}
+
+      const namespace = "http://www.w3.org/2000/svg";
+
+      function addSVG(tag, attributes, text) {
+        const element = document.createElementNS(namespace, tag);
+
+        Object.entries(attributes).forEach(([name, value]) => {
+          element.setAttribute(name, value);
+        });
+
+        if (text !== undefined) element.textContent = text;
+
+        chart.appendChild(element);
+        return element;
+      }
+
+      // Plot area inside a 960 × 360 SVG.
+      function x(index) {
+        return 75 + index / (points.length - 1) * 850;
+      }
+
+      function y(value) {
+        return 295 - (value - minimum) / (maximum - minimum) * 245;
+      }
+
+      function drawGraph() {
+        const values = points.map(point => point.anomaly);
+
+        minimum = Math.floor((Math.min(...values) - .1) * 5) / 5;
+        maximum = Math.ceil((Math.max(...values) + .1) * 5) / 5;
+
+        addSVG("text", { x: 75, y: 24 }, "Temperature anomaly (°C)");
+
+        // Horizontal grid and temperature labels.
+        for (let value = minimum; value <= maximum + .001; value += .2) {
+          addSVG("line", {
+            x1: 75,
+            x2: 925,
+            y1: y(value),
+            y2: y(value),
+            stroke: "#26334b",
+            "stroke-width": 1
+          });
+
+          addSVG("text", {
+            x: 60,
+            y: y(value) + 4,
+            "text-anchor": "end"
+          }, value.toFixed(1));
+        }
+
+        // Year labels.
+        [0, 5, 10, 15, 20, 25, 29].forEach(index => {
+          addSVG("text", {
+            x: x(index),
+            y: 325,
+            "text-anchor": "middle"
+          }, points[index].year);
+        });
+
+        // Faint full dataset remains visible for context.
+        addSVG("polyline", {
+          points: points
+            .map((point, index) => `${x(index)},${y(point.anomaly)}`)
+            .join(" "),
+          fill: "none",
+          stroke: "#8999b5",
+          "stroke-opacity": .45,
+          "stroke-width": 2,
+          "stroke-linejoin": "round"
+        });
+
+        // Bright line progressively follows the audio.
+        activeLine = addSVG("polyline", {
+          fill: "none",
+          stroke: "#38e8ff",
+          "stroke-width": 3,
+          "stroke-linejoin": "round",
+          "stroke-linecap": "round"
+        });
+
+        cursor = addSVG("line", {
+          y1: 50,
+          y2: 295,
+          stroke: "#9b5cff",
+          "stroke-width": 1.5,
+          "stroke-dasharray": "5 5"
+        });
+
+        dot = addSVG("circle", {
+          r: 6,
+          fill: "#38e8ff",
+          stroke: "#ffffff",
+          "stroke-width": 2
+        });
+
+        get("chartDescription").textContent =
+          "Annual global temperature anomalies in degrees Celsius. " +
+          points.map(point =>
+            `${point.year}: ${point.anomaly.toFixed(2)}`
+          ).join("; ");
+      }
+
+      function updateReading(point) {
+  const { year, anomaly, frequency, index } = point;
+
+  get("year").textContent = year;
+  get("anomaly").textContent =
+    `${anomaly >= 0 ? "+" : ""}${anomaly.toFixed(2)} °C`;
+  get("pitch").textContent = `${Math.round(frequency)} Hz`;
+
+  targetIndex = index;
+
+  // Start immediately at 1995 when replaying.
+  if (index === 0) {
+    displayedIndex = 0;
+  }
+
+  get("progress").value = index + 1;
+  get("progressText").textContent =
+    `Year ${index + 1} of ${points.length}`;
+}
+
+      function resetDisplay() {
+        updateReading({ ...points[0], index: 0 });
+        activeLine.setAttribute("points", "");
+        get("progress").value = 0;
+        get("progressText").textContent = "Ready · 30 years";
+        displayedIndex = 0;
+targetIndex = 0;
+drawPlayback(0);
+
+      }
+
+      function updateButtons() {
+        playButton.disabled = state === "playing" || state === "loading";
+        pauseButton.disabled = state !== "playing";
+        stopButton.disabled = !points.length;
+
+        playButton.textContent =
+          state === "paused" ? "▶ RESUME" :
+          state === "ended" ? "▶ REPLAY" : "▶ PLAY";
+      }
+
+      if (!player) {
+        status.textContent =
+          "Cannot find sonification.js. Keep it beside temperature.html.";
+        return;
+      }
+
+      window.addEventListener("temperature:update", event => {
+        if (points.length) updateReading(event.detail);
+      });
+
+      window.addEventListener("temperature:state", event => {
+        state = event.detail.state;
+
+        const messages = {
+          playing: "Playing · Follow the glowing point and listen to the pitch.",
+          paused: "Paused · Click Resume to continue.",
+          stopped: "Reset to 1995 · Press Play to begin.",
+          ended: "Complete · You heard 30 years of temperature change.",
+          error: event.detail.message
+        };
+
+        status.textContent = messages[state] || "";
+        if (state === "stopped" && points.length) resetDisplay();
+        updateButtons();
+      });
+
+      playButton.onclick = async () => {
+        playButton.disabled = true;
+
+        try {
+          await player.play();
+        } catch (error) {
+          status.textContent = error.message;
+        } finally {
+          updateButtons();
+        }
+      };
+
+      pauseButton.onclick = () => player.pause();
+      stopButton.onclick = () => player.stop();
+
+      get("speed").onchange = event => {
+        player.setSpeed(Number(event.target.value));
+      };
+
+      get("volume").oninput = event => {
+        player.setVolume(Number(event.target.value));
+      };
+
+      try {
+        points = await player.load();
+        drawGraph();
+resetDisplay();
+state = "ready";
+
+cancelAnimationFrame(graphFrame);
+previousFrameTime = 0;
+graphFrame = requestAnimationFrame(animateGraph);
+        status.textContent =
+          "Ready · Click Play. At 1× speed, the sequence lasts 30 seconds.";
+        updateButtons();
+      } catch (error) {
+        status.textContent =
+          "Unable to load data. Open this page using Live Server. " +
+          error.message;
+      }
+    });
+  </script>
+</head>
+
+<body>
+  <main>
+    <a class="back" href="../frontend/dashboard.html">
+      ← THE JUKEBOX
+    </a>
+
+    <header>
+      <span class="eyebrow">EARTH / TEMPERATURE</span>
+      <h1>HEAR THE HEAT</h1>
+      <p>Thirty years of global temperature change, translated into sound.</p>
+    </header>
+
+    <section class="panel" aria-label="Temperature player">
+      <div class="panel-title">
+        <div>
+          <span class="eyebrow">GLOBAL LAND–OCEAN TEMPERATURE</span>
+          <h2>Our warming world</h2>
+        </div>
+        <span class="period">1995 — 2024</span>
+      </div>
+
+      <div class="readings">
+        <div>
+          <span>YEAR</span>
+          <strong id="year">—</strong>
+        </div>
+        <div>
+          <span>TEMPERATURE ANOMALY</span>
+          <strong id="anomaly">—</strong>
+        </div>
+        <div>
+          <span>PITCH</span>
+          <strong id="pitch">—</strong>
+        </div>
+      </div>
+
+      <div class="graph">
+        <svg
+          id="chart"
+          viewBox="0 0 960 360"
+          role="img"
+          aria-labelledby="chartTitle chartDescription"
+        >
+          <title id="chartTitle">
+            Global temperature anomalies, 1995–2024
+          </title>
+          <desc id="chartDescription">Loading temperature data.</desc>
+        </svg>
+      </div>
+
+      <div class="legend">
+        <span>Gray: complete temperature record</span>
+        <span class="cyan">Cyan: playback trail</span>
+      </div>
+
+      <progress
+        id="progress"
+        max="30"
+        value="0"
+        aria-label="Temperature playback progress"
+      ></progress>
+
+      <div class="progress-label">
+        <span id="progressText">Loading…</span>
+        <span>Lower anomaly → lower pitch · Higher anomaly → higher pitch</span>
+      </div>
+
+      <div class="controls">
+        <button id="play" disabled>▶ PLAY</button>
+        <button id="pause" disabled>❚❚ PAUSE</button>
+        <button id="stop" disabled>↺ RESET</button>
+
+        <label>
+          Speed
+          <select id="speed">
+            <option value="0.5">0.5×</option>
+            <option value="1" selected>1×</option>
+            <option value="2">2×</option>
+          </select>
+        </label>
+
+        <label>
+          Volume
+          <input
+            id="volume"
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value="0.25"
+          >
+        </label>
+      </div>
+
+      <p id="status" role="status">Loading temperature data…</p>
+    </section>
+
+    <section class="notes">
+      <div>
+        <h3>What am I hearing?</h3>
+        <p>
+          Each soft tone represents one annual average. Warmer years
+          produce higher pitches; cooler years produce lower pitches.
+          The glowing point follows the year you are hearing.
+          Pitch represents temperature, while volume stays consistent.
+        </p>
+      </div>
+
+      <div>
+        <h3>What do these values mean?</h3>
+        <p>
+          These are temperature anomalies: differences from the
+          1951–1980 average, measured in °C. They are not absolute
+          temperatures. We use the annual J–D column from your NASA dataset.
+        </p>
+        <p>
+          Source:
+          <a
+            href="https://data.giss.nasa.gov/gistemp/"
+            target="_blank"
+            rel="noopener"
+          >NASA GISS GISTEMP</a>
+        </p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
