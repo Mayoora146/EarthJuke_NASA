@@ -94,6 +94,19 @@ JavaScript| Interactive functionality
 - Improve accessibility and user experience.
 - Enhance the overall Earth exploration experience.
 
+AI Acknowledgement
+
+We acknowledge the use of ChatGPT (OpenAI) as an AI assistance tool during the development of EARTH TONE.
+
+ChatGPT was used for:
+
+- HTML, CSS and JavaScript coding assistance.
+- Debugging and improving code.
+- Understanding technical concepts.
+- Project documentation and presentation preparation.
+
+The project idea, development decisions, testing and final implementation were handled and reviewed by our team.
+
 👩‍💻 Team NILANOVA
 
 Developed with enthusiasm by:
