@@ -76,7 +76,7 @@ JavaScript| Interactive functionality
 
 1. Clone this repository:
    
-   git clone YOUR_GITHUB_REPOSITORY_URL
+   git clone https://github.com/Mayoora146/EarthJuke_NASA
 
 2. Open the downloaded project folder in Visual Studio Code.
 
