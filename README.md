@@ -106,6 +106,10 @@ ChatGPT was used for:
 - Project documentation and presentation preparation.
 
 The project idea, development decisions, testing and final implementation were handled and reviewed by our team.
+EARTH TONE is an interactive Earth Information Jukebox that helps users explore and understand changes in our planet through climate and temperature data. It presents Earth science information in a simple and engaging way, helping users discover temperature anomalies and environmental changes over time.
+
+Dataset Name: GISS Surface Temperature Analysis (GISTEMP), Version 4 (GISTEMP v4)
+Source: https://data.giss.nasa.gov
 
 👩‍💻 Team NILANOVA
 
