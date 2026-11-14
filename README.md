@@ -30,7 +30,7 @@ We developed EARTH JUKE, an interactive Earth Information Jukebox featuring four
 
 Users can explore different environmental categories and understand various aspects of Earth's changing systems through visual representations.
 
-Our project also introduces a sound experience in the Temperature dashboard.
+Our project introduces a sound experience in the Temperature dashboard.
 
 🌎 Four Main Dashboards
 
